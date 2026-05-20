@@ -19,6 +19,7 @@ router.get('/', async (req, res, next) => {
       maxPrice: req.query.maxPrice ? Number(req.query.maxPrice) : undefined,
       page: req.query.page ? Number(req.query.page) : 1,
       limit: req.query.limit ? Math.min(Number(req.query.limit), 48) : 24,
+      sellerId: req.query.sellerId as string | undefined,
     };
     const result = await listingsService.getListings(query);
     res.json(result);

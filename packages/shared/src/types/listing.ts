@@ -36,6 +36,7 @@ export interface ListingsQuery {
   maxPrice?: number;
   page?: number;
   limit?: number;
+  sellerId?: string;
 }
 
 export interface ListingsResponse {

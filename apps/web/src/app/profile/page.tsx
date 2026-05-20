@@ -24,8 +24,8 @@ export default function ProfilePage() {
     client.get<User>('/users/me').then((u) => {
       setUser(u);
       setDisplayName(u.displayName);
+      client.get<{ listings: Listing[] }>(`/listings?sellerId=${u.id}&limit=48`).then((d) => setListings(d.listings));
     });
-    client.get<{ listings: Listing[] }>('/listings?limit=48').then((d) => setListings(d.listings));
   }, [session, status, router]);
 
   async function saveProfile(e: React.FormEvent) {

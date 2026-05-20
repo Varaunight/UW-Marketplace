@@ -2,10 +2,13 @@ import { pool } from '../db/pool';
 import { CreateListingBody, UpdateListingBody, ListingsQuery } from '@uw-marketplace/shared';
 
 export async function getListings(query: ListingsQuery) {
-  const { q, category, minPrice, maxPrice, page = 1, limit = 24 } = query;
+  const { q, category, minPrice, maxPrice, page = 1, limit = 24, sellerId } = query;
   const offset = (page - 1) * limit;
   const params: unknown[] = [];
-  const conditions: string[] = ["l.status = 'active'"];
+
+  // When viewing a seller's profile show all their non-deleted listings;
+  // on public browse only show active listings.
+  const conditions: string[] = [sellerId ? "l.status != 'deleted'" : "l.status = 'active'"];
 
   if (q) {
     params.push(q);
@@ -22,6 +25,10 @@ export async function getListings(query: ListingsQuery) {
   if (maxPrice !== undefined) {
     params.push(maxPrice);
     conditions.push(`l.price <= $${params.length}`);
+  }
+  if (sellerId) {
+    params.push(sellerId);
+    conditions.push(`l.seller_id = $${params.length}`);
   }
 
   const where = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
