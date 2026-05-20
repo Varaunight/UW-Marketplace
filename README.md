@@ -51,13 +51,11 @@ Open `.env` and fill in the required values:
 | `CLOUDINARY_*` | [cloudinary.com](https://cloudinary.com) → Dashboard |
 | `RESEND_API_KEY` | [resend.com](https://resend.com) → API Keys |
 
-Then create the Next.js local env file:
+Then create the Next.js local env file and fill in the `NEXTAUTH_SECRET` (same value as in `.env`):
 
 ```bash
 cp apps/web/.env.local.example apps/web/.env.local
 ```
-
-Fill in `apps/web/.env.local` with the same `NEXTAUTH_*` values from `.env`.
 
 > **Note:** In development (`NODE_ENV=development`), email verification is skipped and accounts are auto-verified on sign-up.
 
