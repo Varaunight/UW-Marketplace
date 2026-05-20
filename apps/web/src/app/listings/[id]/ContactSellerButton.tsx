@@ -33,7 +33,7 @@ export default function ContactSellerButton({ listing }: { listing: Listing }) {
     <button
       onClick={handleContact}
       disabled={loading}
-      className="w-full bg-yellow-400 hover:bg-yellow-500 text-black font-semibold py-3 rounded-xl transition disabled:opacity-50"
+      className="w-full bg-gold hover:bg-gold-dark text-black font-semibold py-3 rounded-xl transition-colors disabled:opacity-50"
     >
       {loading ? 'Opening chat...' : 'Contact Seller'}
     </button>

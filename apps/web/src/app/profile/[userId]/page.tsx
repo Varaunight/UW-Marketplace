@@ -19,22 +19,24 @@ export default async function PublicProfilePage({ params }: Props) {
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
       <div className="flex items-center gap-4 mb-8">
-        <div className="relative w-16 h-16 rounded-full overflow-hidden bg-yellow-100">
+        <div className="relative w-14 h-14 rounded-full overflow-hidden bg-gold-muted">
           {user.avatarUrl ? (
             <Image src={user.avatarUrl} alt={user.displayName} fill className="object-cover" />
           ) : (
-            <div className="w-full h-full flex items-center justify-center text-2xl">👤</div>
+            <div className="w-full h-full flex items-center justify-center text-xl text-gold-ink">
+              {user.displayName.charAt(0).toUpperCase()}
+            </div>
           )}
         </div>
         <div>
           <h1 className="text-xl font-bold text-gray-900">{user.displayName}</h1>
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-gray-400">
             Member since {new Date(user.createdAt).toLocaleDateString('en-CA', { year: 'numeric', month: 'long' })}
           </p>
         </div>
       </div>
 
-      <h2 className="text-lg font-semibold text-gray-700 mb-4">Active listings</h2>
+      <h2 className="text-sm font-semibold uppercase tracking-widest text-gray-400 mb-4">Active listings</h2>
       <ListingGrid listings={data.listings} />
     </div>
   );

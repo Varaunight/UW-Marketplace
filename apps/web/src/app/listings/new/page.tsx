@@ -55,32 +55,35 @@ export default function NewListingPage() {
 
   if (status === 'loading') return null;
 
+  const inputClass = 'w-full border border-border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold bg-base transition-shadow';
+
   return (
     <div className="max-w-2xl mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold mb-6">List an item</h1>
+      <h1 className="text-2xl font-bold mb-1">List an item</h1>
+      <p className="text-sm text-gray-400 mb-6">Fill in the details below to post your item.</p>
 
       {error && <div className="bg-red-50 text-red-700 px-4 py-3 rounded-lg mb-4 text-sm">{error}</div>}
 
-      <form onSubmit={handleSubmit} className="space-y-5 bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+      <form onSubmit={handleSubmit} className="space-y-5 bg-surface rounded-xl p-6 border border-border">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1.5">Title</label>
           <input
             type="text"
             required
             value={form.title}
             onChange={(e) => setForm({ ...form, title: e.target.value })}
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-400"
+            className={inputClass}
             placeholder="e.g. MATH 137 Textbook"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1.5">Category</label>
           <select
             required
             value={form.categoryId}
             onChange={(e) => setForm({ ...form, categoryId: e.target.value })}
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-400"
+            className={inputClass}
           >
             <option value="">Select a category</option>
             {categories.map((cat) => (
@@ -90,7 +93,7 @@ export default function NewListingPage() {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Price ($)</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1.5">Price ($)</label>
           <input
             type="number"
             required
@@ -98,36 +101,36 @@ export default function NewListingPage() {
             step="0.01"
             value={form.price}
             onChange={(e) => setForm({ ...form, price: e.target.value })}
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-400"
+            className={inputClass}
             placeholder="0.00"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1.5">Description</label>
           <textarea
             required
             rows={5}
             value={form.description}
             onChange={(e) => setForm({ ...form, description: e.target.value })}
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-400 resize-none"
+            className={`${inputClass} resize-none`}
             placeholder="Describe the item's condition, what's included, pickup location, etc."
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Photos (up to 5)</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1.5">Photos (up to 5)</label>
           <input
             type="file"
             accept="image/*"
             multiple
             onChange={handleFiles}
-            className="text-sm text-gray-600"
+            className="text-sm text-gray-500"
           />
           {images.length > 0 && (
-            <div className="flex gap-2 mt-2 flex-wrap">
+            <div className="flex gap-2 mt-3 flex-wrap">
               {images.map((f, i) => (
-                <div key={i} className="w-16 h-16 rounded-lg overflow-hidden bg-gray-100">
+                <div key={i} className="w-16 h-16 rounded-lg overflow-hidden bg-base border border-border">
                   <img src={URL.createObjectURL(f)} alt="" className="w-full h-full object-cover" />
                 </div>
               ))}
@@ -138,7 +141,7 @@ export default function NewListingPage() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-yellow-400 hover:bg-yellow-500 text-black font-semibold py-3 rounded-xl transition disabled:opacity-50"
+          className="w-full bg-gold hover:bg-gold-dark text-black font-semibold py-3 rounded-xl transition-colors disabled:opacity-50"
         >
           {loading ? 'Publishing...' : 'Publish listing'}
         </button>

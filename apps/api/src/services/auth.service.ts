@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken';
 import { randomUUID } from 'crypto';
 import { pool } from '../db/pool';
 import { env } from '../config/env';
-import { sendVerificationEmail } from './email.service';
+import { sendVerificationEmail, sendPasswordResetEmail } from './email.service';
 
 const UW_DOMAIN = '@uwaterloo.ca';
 const JWT_EXPIRES = '15m';
@@ -31,6 +31,18 @@ export async function register(email: string, password: string, displayName: str
   if (existing.rows.length > 0) throw new Error('Email already registered');
 
   const hash = await bcrypt.hash(password, 12);
+
+  // In development, skip email verification and auto-verify accounts
+  if (env.NODE_ENV === 'development') {
+    const { rows } = await pool.query(
+      `INSERT INTO users (email, password_hash, display_name, email_verified)
+       VALUES ($1, $2, $3, TRUE) RETURNING id`,
+      [email.toLowerCase(), hash, displayName]
+    );
+    console.log(`[dev] Auto-verified account for ${email.toLowerCase()}`);
+    return { userId: rows[0].id };
+  }
+
   const verifyToken = randomUUID();
   const verifyExp = new Date(Date.now() + 24 * 60 * 60 * 1000);
 
@@ -112,6 +124,72 @@ export async function refreshTokens(refreshToken: string) {
 
 export async function logout(refreshToken: string) {
   await pool.query('DELETE FROM refresh_tokens WHERE token = $1', [refreshToken]);
+}
+
+export async function findOrCreateMicrosoftUser(email: string, displayName: string, microsoftId: string) {
+  const normalizedEmail = email.toLowerCase();
+  if (!normalizedEmail.endsWith('@uwaterloo.ca')) {
+    throw new Error('Only @uwaterloo.ca accounts are allowed');
+  }
+
+  const { rows } = await pool.query(
+    'SELECT id, email_verified FROM users WHERE email = $1',
+    [normalizedEmail]
+  );
+
+  let userId: string;
+  if (rows.length > 0) {
+    userId = rows[0].id;
+    // Ensure SSO users are always marked verified
+    if (!rows[0].email_verified) {
+      await pool.query('UPDATE users SET email_verified = TRUE WHERE id = $1', [userId]);
+    }
+  } else {
+    const { rows: inserted } = await pool.query(
+      `INSERT INTO users (email, display_name, email_verified, microsoft_id)
+       VALUES ($1, $2, TRUE, $3) RETURNING id`,
+      [normalizedEmail, displayName, microsoftId]
+    );
+    userId = inserted[0].id;
+  }
+
+  const access = jwt.sign(
+    { sub: userId, email: normalizedEmail, verified: true },
+    env.JWT_SECRET,
+    { expiresIn: JWT_EXPIRES }
+  );
+  return { accessToken: access, userId };
+}
+
+export async function requestPasswordReset(email: string) {
+  const { rows } = await pool.query(
+    'SELECT id FROM users WHERE email = $1 AND password_hash IS NOT NULL',
+    [email.toLowerCase()]
+  );
+  // Return silently if email not found — don't reveal whether an account exists
+  if (rows.length === 0) return;
+
+  const token = randomUUID();
+  const exp = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
+  await pool.query(
+    'UPDATE users SET reset_token = $1, reset_token_exp = $2 WHERE id = $3',
+    [token, exp, rows[0].id]
+  );
+  await sendPasswordResetEmail(email.toLowerCase(), token);
+}
+
+export async function resetPassword(token: string, newPassword: string) {
+  const { rows } = await pool.query(
+    'SELECT id FROM users WHERE reset_token = $1 AND reset_token_exp > NOW()',
+    [token]
+  );
+  if (rows.length === 0) throw new Error('Invalid or expired reset link');
+
+  const hash = await bcrypt.hash(newPassword, 12);
+  await pool.query(
+    'UPDATE users SET password_hash = $1, reset_token = NULL, reset_token_exp = NULL WHERE id = $2',
+    [hash, rows[0].id]
+  );
 }
 
 export async function resendVerification(userId: string) {

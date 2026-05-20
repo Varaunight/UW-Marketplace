@@ -25,16 +25,13 @@ export default function ChatPage() {
     if (status === 'unauthenticated') { router.push('/login'); return; }
     if (!session) return;
 
-    // Load history
     apiClient(session.accessToken)
       .get<Message[]>(`/conversations/${conversationId}/messages`)
       .then(setMessages)
       .finally(() => setLoading(false));
 
-    // Mark as read
     apiClient(session.accessToken).patch(`/conversations/${conversationId}/read`, {});
 
-    // Connect socket
     const socket = io(API_URL, {
       auth: { token: session.accessToken },
       transports: ['websocket', 'polling'],
@@ -74,23 +71,23 @@ export default function ChatPage() {
     }
   }
 
-  if (loading) return <div className="max-w-2xl mx-auto px-4 py-8 text-gray-400">Loading...</div>;
+  if (loading) return <div className="max-w-2xl mx-auto px-4 py-8 text-gray-400 text-sm">Loading...</div>;
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-6 flex flex-col h-[calc(100vh-4rem)]">
       <div className="flex-1 overflow-y-auto space-y-3 pb-4">
         {messages.map((msg) => {
-          const isMe = msg.senderId === session?.user?.name; // placeholder — use actual userId from token
+          const isMe = msg.senderId === session?.user?.name;
           return (
             <div key={msg.id} className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}>
               <div
                 className={`max-w-xs px-4 py-2.5 rounded-2xl text-sm ${
                   isMe
-                    ? 'bg-yellow-400 text-black rounded-br-none'
-                    : 'bg-white border border-gray-200 text-gray-800 rounded-bl-none'
+                    ? 'bg-gold text-black rounded-br-none'
+                    : 'bg-surface border border-border text-gray-800 rounded-bl-none'
                 }`}
               >
-                {!isMe && <p className="text-xs font-medium text-gray-500 mb-1">{msg.senderName}</p>}
+                {!isMe && <p className="text-xs font-medium text-gray-400 mb-1">{msg.senderName}</p>}
                 <p>{msg.body}</p>
               </div>
             </div>
@@ -99,18 +96,18 @@ export default function ChatPage() {
         <div ref={bottomRef} />
       </div>
 
-      <form onSubmit={sendMessage} className="flex gap-2 pt-3 border-t border-gray-200">
+      <form onSubmit={sendMessage} className="flex gap-2 pt-3 border-t border-border">
         <input
           type="text"
           value={body}
           onChange={(e) => setBody(e.target.value)}
           placeholder="Type a message..."
-          className="flex-1 border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-400"
+          className="flex-1 border border-border rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold bg-base"
         />
         <button
           type="submit"
           disabled={!body.trim()}
-          className="bg-yellow-400 hover:bg-yellow-500 text-black font-semibold px-5 py-2.5 rounded-xl transition disabled:opacity-40 text-sm"
+          className="bg-gold hover:bg-gold-dark text-black font-semibold px-5 py-2.5 rounded-xl transition-colors disabled:opacity-40 text-sm"
         >
           Send
         </button>

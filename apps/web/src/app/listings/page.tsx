@@ -40,7 +40,7 @@ export default async function ListingsPage({ searchParams }: Props) {
 
         <div className="flex-1">
           <div className="flex items-center justify-between mb-4">
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-gray-400">
               {data.total} listing{data.total !== 1 ? 's' : ''} found
             </p>
           </div>
@@ -56,10 +56,10 @@ export default async function ListingsPage({ searchParams }: Props) {
                   <a
                     key={p}
                     href={`/listings?${pqs.toString()}`}
-                    className={`px-3 py-1.5 rounded-lg text-sm font-medium border transition ${
+                    className={`px-3 py-1.5 rounded-lg text-sm font-medium border transition-colors ${
                       p === page
-                        ? 'bg-yellow-400 border-yellow-400 text-black'
-                        : 'bg-white border-gray-200 text-gray-600 hover:border-yellow-400'
+                        ? 'bg-gold border-gold text-black'
+                        : 'bg-surface border-border text-gray-600 hover:border-gold'
                     }`}
                   >
                     {p}

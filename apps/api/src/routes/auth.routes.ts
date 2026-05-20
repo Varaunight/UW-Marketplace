@@ -16,6 +16,24 @@ const loginSchema = z.object({
   password: z.string(),
 });
 
+const microsoftSchema = z.object({
+  email: z.string().email(),
+  displayName: z.string().min(1).max(100),
+  microsoftId: z.string(),
+});
+
+router.post('/microsoft', async (req, res, next) => {
+  try {
+    const body = microsoftSchema.parse(req.body);
+    const result = await authService.findOrCreateMicrosoftUser(body.email, body.displayName, body.microsoftId);
+    res.json(result);
+  } catch (err) {
+    if (err instanceof z.ZodError) { res.status(400).json({ error: err.errors }); return; }
+    if (err instanceof Error) { res.status(400).json({ error: err.message }); return; }
+    next(err);
+  }
+});
+
 router.post('/register', async (req, res, next) => {
   try {
     const body = registerSchema.parse(req.body);
@@ -83,6 +101,33 @@ router.post('/logout', authenticate, async (req: AuthRequest, res, next) => {
     res.clearCookie('refreshToken');
     res.json({ success: true });
   } catch (err) { next(err); }
+});
+
+router.post('/forgot-password', async (req, res, next) => {
+  try {
+    const { email } = z.object({ email: z.string().email() }).parse(req.body);
+    await authService.requestPasswordReset(email);
+    // Always return 200 so we don't reveal whether an account exists
+    res.json({ success: true });
+  } catch (err) {
+    if (err instanceof z.ZodError) { res.status(400).json({ error: err.errors }); return; }
+    next(err);
+  }
+});
+
+router.post('/reset-password', async (req, res, next) => {
+  try {
+    const { token, password } = z.object({
+      token: z.string(),
+      password: z.string().min(8),
+    }).parse(req.body);
+    await authService.resetPassword(token, password);
+    res.json({ success: true });
+  } catch (err) {
+    if (err instanceof z.ZodError) { res.status(400).json({ error: err.errors }); return; }
+    if (err instanceof Error) { res.status(400).json({ error: err.message }); return; }
+    next(err);
+  }
 });
 
 router.post('/resend-verification', authenticate, async (req: AuthRequest, res, next) => {

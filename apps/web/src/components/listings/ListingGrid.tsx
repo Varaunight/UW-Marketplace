@@ -11,7 +11,7 @@ export default function ListingGrid({ listings, loading }: Props) {
     return (
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
         {Array.from({ length: 8 }).map((_, i) => (
-          <div key={i} className="bg-gray-100 rounded-xl h-64 animate-pulse" />
+          <div key={i} className="bg-border rounded-xl h-64 animate-pulse" />
         ))}
       </div>
     );
@@ -21,7 +21,7 @@ export default function ListingGrid({ listings, loading }: Props) {
     return (
       <div className="text-center py-20 text-gray-400">
         <div className="text-5xl mb-4">🔍</div>
-        <p className="text-lg font-medium">No listings found</p>
+        <p className="text-lg font-medium text-gray-500">No listings found</p>
         <p className="text-sm mt-1">Try adjusting your filters</p>
       </div>
     );
