@@ -3,6 +3,7 @@ import { Listing } from '@uw-marketplace/shared';
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import ContactSellerButton from './ContactSellerButton';
+import OwnerActions from './OwnerActions';
 
 interface Props { params: Promise<{ id: string }> }
 
@@ -76,6 +77,7 @@ export default async function ListingDetailPage({ params }: Props) {
           )}
 
           <ContactSellerButton listing={listing} />
+          <OwnerActions listingId={listing.id} sellerId={listing.sellerId} />
         </div>
       </div>
     </div>
