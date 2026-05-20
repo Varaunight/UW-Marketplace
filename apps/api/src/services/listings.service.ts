@@ -5,11 +5,14 @@ export async function getListings(query: ListingsQuery) {
   const { q, category, minPrice, maxPrice, page = 1, limit = 24, sellerId } = query;
   const offset = (page - 1) * limit;
   const params: unknown[] = [];
+  // When filtering by seller show active+sold; general browse shows only active
+  const statusFilter = sellerId ? "l.status IN ('active', 'sold')" : "l.status = 'active'";
+  const conditions: string[] = [statusFilter];
 
-  // When viewing a seller's profile show all their non-deleted listings;
-  // on public browse only show active listings.
-  const conditions: string[] = [sellerId ? "l.status != 'deleted'" : "l.status = 'active'"];
-
+  if (sellerId) {
+    params.push(sellerId);
+    conditions.push(`l.seller_id = $${params.length}`);
+  }
   if (q) {
     params.push(q);
     conditions.push(`l.search_vector @@ plainto_tsquery('english', $${params.length})`);
@@ -25,10 +28,6 @@ export async function getListings(query: ListingsQuery) {
   if (maxPrice !== undefined) {
     params.push(maxPrice);
     conditions.push(`l.price <= $${params.length}`);
-  }
-  if (sellerId) {
-    params.push(sellerId);
-    conditions.push(`l.seller_id = $${params.length}`);
   }
 
   const where = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';

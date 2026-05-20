@@ -21,11 +21,11 @@ export default function SearchBar({ defaultValue = '' }: { defaultValue?: string
         value={q}
         onChange={(e) => setQ(e.target.value)}
         placeholder="Search for textbooks, furniture, electronics..."
-        className="flex-1 border border-black/20 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-black/30 text-sm bg-white/80 placeholder-black/40"
+        className="flex-1 border border-border rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-gold/40 text-sm bg-surface text-fg placeholder-muted transition-shadow"
       />
       <button
         type="submit"
-        className="bg-black hover:bg-gray-900 text-gold font-semibold px-6 py-3 rounded-lg transition-colors text-sm"
+        className="bg-gold hover:bg-gold-dark text-black font-semibold px-6 py-3 rounded-lg transition-colors text-sm"
       >
         Search
       </button>

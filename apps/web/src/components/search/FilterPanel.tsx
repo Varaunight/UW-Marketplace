@@ -20,11 +20,11 @@ export default function FilterPanel({ categories }: { categories: Category[] }) 
 
   return (
     <aside className="w-52 shrink-0">
-      <div className="bg-surface rounded-xl border border-border p-4 space-y-5">
+      <div className="bg-surface rounded-xl border border-border p-4 space-y-5 card-shadow">
         <div>
-          <h3 className="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-3">Category</h3>
+          <h3 className="text-xs font-semibold uppercase tracking-widest text-muted mb-3">Category</h3>
           <div className="space-y-1.5">
-            <label className="flex items-center gap-2 text-sm cursor-pointer text-gray-700">
+            <label className="flex items-center gap-2 text-sm cursor-pointer text-fg/70 hover:text-fg transition-colors">
               <input
                 type="radio"
                 name="category"
@@ -36,7 +36,7 @@ export default function FilterPanel({ categories }: { categories: Category[] }) 
               All categories
             </label>
             {categories.map((cat) => (
-              <label key={cat.id} className="flex items-center gap-2 text-sm cursor-pointer text-gray-700">
+              <label key={cat.id} className="flex items-center gap-2 text-sm cursor-pointer text-fg/70 hover:text-fg transition-colors">
                 <input
                   type="radio"
                   name="category"
@@ -52,21 +52,21 @@ export default function FilterPanel({ categories }: { categories: Category[] }) 
         </div>
 
         <div>
-          <h3 className="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-3">Price range</h3>
+          <h3 className="text-xs font-semibold uppercase tracking-widest text-muted mb-3">Price range</h3>
           <div className="flex gap-2">
             <input
               type="number"
               placeholder="Min"
               defaultValue={searchParams.get('minPrice') || ''}
               onBlur={(e) => update('minPrice', e.target.value)}
-              className="w-full border border-border rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold bg-base"
+              className="w-full border border-border rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold/40 bg-card text-fg placeholder-muted"
             />
             <input
               type="number"
               placeholder="Max"
               defaultValue={searchParams.get('maxPrice') || ''}
               onBlur={(e) => update('maxPrice', e.target.value)}
-              className="w-full border border-border rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold bg-base"
+              className="w-full border border-border rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold/40 bg-card text-fg placeholder-muted"
             />
           </div>
         </div>

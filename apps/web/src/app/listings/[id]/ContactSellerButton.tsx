@@ -11,7 +11,9 @@ export default function ContactSellerButton({ listing }: { listing: Listing }) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
+  // Don't show contact button if listing is not active or if viewer is the seller
   if (listing.status !== 'active') return null;
+  if (session?.userId === listing.sellerId) return null;
 
   async function handleContact() {
     if (!session) {

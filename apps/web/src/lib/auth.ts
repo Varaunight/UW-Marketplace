@@ -3,6 +3,15 @@ import CredentialsProvider from 'next-auth/providers/credentials';
 
 const API_URL = process.env.API_URL || 'http://localhost:4000';
 
+function decodeJWTPayload(token: string): Record<string, unknown> {
+  try {
+    const base64 = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
+    return JSON.parse(Buffer.from(base64, 'base64').toString('utf-8'));
+  } catch {
+    return {};
+  }
+}
+
 export const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
@@ -21,7 +30,9 @@ export const authOptions: NextAuthOptions = {
           });
           if (!res.ok) return null;
           const data = await res.json();
-          return { id: 'placeholder', accessToken: data.accessToken, email: credentials.email };
+          const payload = decodeJWTPayload(data.accessToken);
+          const userId = (payload.userId as string) || 'unknown';
+          return { id: userId, accessToken: data.accessToken, email: credentials.email };
         } catch {
           return null;
         }
@@ -32,11 +43,13 @@ export const authOptions: NextAuthOptions = {
     async jwt({ token, user }) {
       if (user) {
         token.accessToken = (user as { accessToken: string }).accessToken;
+        token.userId = user.id;
       }
       return token;
     },
     async session({ session, token }) {
       session.accessToken = token.accessToken as string;
+      session.userId = token.userId as string;
       return session;
     },
   },

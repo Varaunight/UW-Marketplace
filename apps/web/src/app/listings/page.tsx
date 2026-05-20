@@ -3,6 +3,12 @@ import { ListingsResponse, Category } from '@uw-marketplace/shared';
 import ListingGrid from '@/components/listings/ListingGrid';
 import SearchBar from '@/components/search/SearchBar';
 import FilterPanel from '@/components/search/FilterPanel';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Browse Listings — UW Marketplace',
+  description: 'Find textbooks, electronics, furniture, bikes and more from University of Waterloo students.',
+};
 
 interface Props {
   searchParams: Promise<{ q?: string; category?: string; minPrice?: string; maxPrice?: string; page?: string }>;
@@ -40,7 +46,7 @@ export default async function ListingsPage({ searchParams }: Props) {
 
         <div className="flex-1">
           <div className="flex items-center justify-between mb-4">
-            <p className="text-sm text-gray-400">
+            <p className="text-sm text-muted">
               {data.total} listing{data.total !== 1 ? 's' : ''} found
             </p>
           </div>
@@ -59,7 +65,7 @@ export default async function ListingsPage({ searchParams }: Props) {
                     className={`px-3 py-1.5 rounded-lg text-sm font-medium border transition-colors ${
                       p === page
                         ? 'bg-gold border-gold text-black'
-                        : 'bg-surface border-border text-gray-600 hover:border-gold'
+                        : 'bg-surface border-border text-fg/60 hover:border-gold/40 hover:text-fg'
                     }`}
                   >
                     {p}
