@@ -73,6 +73,7 @@ router.patch('/:id', authenticate, requireVerified, async (req: AuthRequest, res
     res.json({ success: true });
   } catch (err) {
     if (err instanceof z.ZodError) { res.status(400).json({ error: err.errors }); return; }
+    if (err instanceof Error && err.message === 'Not authorized') { res.status(403).json({ error: err.message }); return; }
     next(err);
   }
 });
@@ -81,7 +82,10 @@ router.delete('/:id', authenticate, async (req: AuthRequest, res, next) => {
   try {
     await listingsService.deleteListing(req.params.id, req.userId!);
     res.json({ success: true });
-  } catch (err) { next(err); }
+  } catch (err) {
+    if (err instanceof Error && err.message === 'Not authorized') { res.status(403).json({ error: err.message }); return; }
+    next(err);
+  }
 });
 
 // Image routes

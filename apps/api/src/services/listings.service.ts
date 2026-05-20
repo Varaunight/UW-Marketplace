@@ -104,17 +104,19 @@ export async function updateListing(id: string, sellerId: string, body: UpdateLi
   sets.push(`updated_at = NOW()`);
   params.push(id, sellerId);
 
-  await pool.query(
+  const result = await pool.query(
     `UPDATE listings SET ${sets.join(', ')} WHERE id = $${params.length - 1} AND seller_id = $${params.length}`,
     params
   );
+  if (result.rowCount === 0) throw new Error('Not authorized');
 }
 
 export async function deleteListing(id: string, sellerId: string) {
-  await pool.query(
+  const result = await pool.query(
     `UPDATE listings SET status = 'deleted' WHERE id = $1 AND seller_id = $2`,
     [id, sellerId]
   );
+  if (result.rowCount === 0) throw new Error('Not authorized');
 }
 
 function mapListing(row: Record<string, unknown>) {
